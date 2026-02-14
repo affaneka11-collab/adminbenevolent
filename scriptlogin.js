@@ -1,7 +1,7 @@
 // Inisialisasi Supabase (ganti dengan URL dan anon key dari project Supabase Anda)
 const supabaseUrl = 'https://piaycptnvkyahallyysx.supabase.co'; // Ganti dengan URL project Supabase Anda
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYXljcHRudmt5YWhhbGx5eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTIyMzcsImV4cCI6MjA4NjU4ODIzN30.ADYwz_gLL7GzsZXOvWTSLNWyaYQurR3fGQdzl7qnEWU'; // Ganti dengan anon key dari Supabase dashboard
-const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+const supabaselokal = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 // Fungsi untuk menampilkan error
 function showError(message) {
@@ -57,4 +57,5 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 // Sembunyikan error saat user mulai mengetik
 document.getElementById('username').addEventListener('input', hideError);
 document.getElementById('password').addEventListener('input', hideError);
+
 
