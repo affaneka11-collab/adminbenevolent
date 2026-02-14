@@ -1,0 +1,235 @@
+/* dashboard.css */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; 
+    padding: 0; 
+    background-color: #f4f4f4; 
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+nav { 
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px 20px;
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    z-index: 10; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.nav-logo {
+    width: 40px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.nav-text {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.2em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.nav-right {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    margin-right: 30px;
+}
+nav a { 
+    text-decoration: none; 
+    color: #333;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 25px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 123, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+nav a:hover::before {
+    left: 100%;
+}
+nav a:hover { 
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff; 
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+nav a.active { 
+    background: rgba(0, 123, 255, 0.2);
+    color: #007bff; 
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.2);
+}
+.user-profile {
+    color: #333;
+    font-weight: 500;
+    font-size: 1em;
+}
+.warpper {
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    background-color: #e9ecef;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.tab-btn.active {
+    background-color: #007bff;
+    color: white;
+}
+.tab-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+.section {
+    display: none;
+}
+.section.active {
+    display: block;
+}
+button, input[type="button"], .btn {
+    background-color: #6d6d6d;
+    color: #fffdfd;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+input[type="button"]:hover {
+    background-color: #555555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.prestasi-list, .moderator-list, .karya-list, .admin-list {
+    list-style: none;
+    padding: 0;
+}
+.prestasi-item, .moderator-item, .karya-item, .admin-item {
+    background: #f9f9f9;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.prestasi-item h3, .moderator-item h3, .karya-item h3, .admin-item h3 {
+    margin: 0 0 10px 0;
+    color: #007bff;
+}
+.prestasi-item p, .moderator-item p, .karya-item p, .admin-item p {
+    margin: 0;
+    color: #555;
+}
+.delete-btn, .edit-btn, .toggle-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    margin-left: 5px;
+}
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+.delete-btn:hover {
+    background-color: #c82333;
+}
+.edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+.toggle-btn {
+    background-color: #28a745;
+    color: white;
+}
+.toggle-btn:hover {
+    background-color: #218838;
+}
+.toggle-btn.inactive {
+    background-color: #6c757d;
+}
+.toggle-btn.inactive:hover {
+    background-color: #5a6268;
+}
+main {
+    opacity: 1;
+    transition: fade 1s ease-in-out;
+    margin-top: 80px;
+    padding: 20px;
+    flex: 1;
+}
+main h2 {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    display: inline-block;
+    animation: fadeIn 0.7s ease-in-out 1ms both;
+}
+footer {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+    margin-top: auto;
+}
+.footerkuadrat {
+    width: 100%;
+    height: 50px;
+    background-color: #f1f1f1;
+    text-align: center;
+    line-height: 50px;
+    color: #8d8d8d;
+    border-top: 1px solid #ddd;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
