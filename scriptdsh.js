@@ -492,29 +492,28 @@ async function ubahPassword(username) {
     }
 
     try {
-        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', username).single();
+        // Gunakan .maybeSingle() untuk menghindari error jika tidak ada data
+        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', username).maybeSingle();
         if (error) throw error;
-
-        if (passwordInput.value !== account.password) {
-            alert("Password salah!");
+        if (!account) {
+            alert("Akun tidak ditemukan. Silakan login ulang.");
+            grecaptcha.reset();
             return;
         }
 
-        if (editingModUsername) {
-            const { error } = await supabaselokal.from('administrator').update({ 
-                password: newPasswordInput.value, 
-                peran: 'Moderator', 
-                status_akun: active 
-            }).eq('username', editingModUsername);
-            if (error) throw error;
-            alert("Password moderator berhasil diubah!");
-        } else {
-            const { error } = await supabaselokal.from('administrator').update({ 
-                password: newPasswordInput.value 
-            }).eq('username', username);
-            if (error) throw error;
-            alert("Password berhasil diubah!");
+        if (passwordInput.value !== account.password) {
+            alert("Password salah!");
+            grecaptcha.reset();
+            return;
         }
+
+        // Hapus logika editingModUsername jika tidak diperlukan (untuk keamanan)
+        // Jika diperlukan, tambahkan pengecekan role admin
+        const { error: updateError } = await supabaselokal.from('administrator').update({ 
+            password: newPasswordInput.value 
+        }).eq('username', username);
+        if (updateError) throw updateError;
+        alert("Password berhasil diubah!");
 
         passwordInput.value = '';
         newPasswordInput.value = '';
@@ -523,5 +522,6 @@ async function ubahPassword(username) {
     } catch (error) {
         console.error('Error:', error);
         alert('Terjadi kesalahan saat mengubah password. Silakan coba lagi.');
+        grecaptcha.reset();
     }
 }
