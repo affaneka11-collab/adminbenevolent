@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Kelas 8 Benevolent</title>
     <link rel="stylesheet" href="styledsh.css">
+    <!-- Tambahkan script reCAPTCHA di head -->
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
     <aside class="sidebar">
@@ -15,11 +17,19 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
+                <h3 class="nav-section-title">Public Settings</h3>
                 <li><a href="#" class="sidebar-link active" data-tab="prestasi">🏆 Prestasi</a></li>
                 <li><a href="#" class="sidebar-link" data-tab="karya">🎨 Karya Siswa</a></li>
                 <li id="moderatorMenu" style="display: none;"><a href="#" class="sidebar-link" data-tab="moderator">👥 Moderator</a></li>
             </ul>
         </nav>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-nav">
+            <ul>
+                <h3 class="nav-section-title">Account</h3>
+                <li id="adminMenu"><a href="#" class="sidebar-link" data-tab="settings">⚙️ Settings</a></li> 
+            </ul>
+        </div>
         <div class="sidebar-footer">
             <span class="user-profile">Welcome, <span id="userName"></span></span>
             <a href="#" onclick="logout()">🚪 Logout</a>
@@ -68,6 +78,16 @@
                 <ul class="moderator-list" id="moderatorList"></ul>
                 <h4>Daftar Admin</h4>
                 <ul class="admin-list" id="adminList"></ul>
+            </div>
+            <div id="settings-section" class="section">
+                <h3>Pengaturan Akun</h3>
+                <form id="updatePasswordForm">
+                    <input type="password" id="currentPassword" placeholder="Password Saat Ini" required>
+                    <input type="password" id="newPassword" placeholder="Password Baru" required>
+                    <!-- Tambahkan elemen reCAPTCHA di sini -->
+                    <div class="g-recaptcha" data-sitekey="6Leu3GssAAAAAJXyOLGFr85GEnMEYFvNtVOHJkeG" id="recaptcha"></div>
+                    <button type="submit">Update Password</button>
+                </form>
             </div>
         </div>
     </main>
