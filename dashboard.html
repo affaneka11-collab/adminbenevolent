@@ -8,26 +8,26 @@
     <link rel="stylesheet" href="styledsh.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="nav-left">
-                <img src="img/logo.png" alt="Logo" class="nav-logo">
-                <span class="nav-text">Admin - Kelas 8 Benevolent</span>
-            </div>
-            <div class="nav-right">
-                <span class="user-profile">Welcome, <span id="userName"></span></span>
-                <a href="#" onclick="logout()">🚪 Logout</a>
-            </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="img/logo.png" alt="Logo" class="sidebar-logo">
+            <h3>Admin Panel</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="sidebar-link active" data-tab="prestasi">🏆 Prestasi</a></li>
+                <li><a href="#" class="sidebar-link" data-tab="karya">🎨 Karya Siswa</a></li>
+                <li id="moderatorMenu" style="display: none;"><a href="#" class="sidebar-link" data-tab="moderator">👥 Moderator</a></li>
+            </ul>
         </nav>
-    </header>
-    <main>  
+        <div class="sidebar-footer">
+            <span class="user-profile">Welcome, <span id="userName"></span></span>
+            <a href="#" onclick="logout()">🚪 Logout</a>
+        </div>
+    </aside>
+    <main class="main-content">
         <h2 id="pageTitle">Kelola Prestasi</h2>
         <div class="warpper">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="showTab('prestasi')">Prestasi</button>
-                <button class="tab-btn" onclick="showTab('karya')">Karya Siswa</button>
-                <button class="tab-btn" id="moderatorTab" onclick="showTab('moderator')" style="display: none;">Moderator</button>
-            </div>
             <div id="prestasi-section" class="section active">
                 <h3 id="prestasiFormTitle">Tambah Prestasi Baru</h3>
                 <form id="addForm">
@@ -57,7 +57,7 @@
                 <form id="addModForm">
                     <input type="text" id="modUsername" placeholder="Username Moderator" required>
                     <input type="password" id="modPassword" placeholder="Password Moderator" required>
-                    <label><input type="checkbox" id="modActive" checked> Aktif</label>
+                    <span><input type="checkbox" id="modActive" checked> Aktif </span>
                     <button type="submit" id="modSubmitBtn">Tambahkan sebagai Moderator</button>
                     <button type="button" id="addAdminBtn">Tambahkan sebagai Admin</button>
                     <button type="button" id="cancelModBtn" style="display: none;" onclick="cancelEdit('moderator')">Batal</button>
@@ -69,12 +69,7 @@
             </div>
         </div>
     </main>
-    <div class="footerkuadrat"></div>
-    <footer>
-        © 2025 ICT 8 Benevolent <a href="">AffanEkaP</a>
-    </footer>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scriptdsh.js"></script>
 </body>
 </html>
-
