@@ -33,6 +33,7 @@
                 <form id="addForm">
                     <input type="text" id="title" placeholder="Judul Prestasi" required>
                     <textarea id="description" placeholder="Deskripsi Prestasi" rows="4" required></textarea>
+                    <input type="text" id="ImageUrl" placeholder="URL Gambar Karya (Opsional)">
                     <button type="submit" id="prestasiSubmitBtn">Tambah Prestasi</button>
                     <button type="button" id="cancelPrestasiBtn" style="display: none;" onclick="cancelEdit('prestasi')">Batal</button>
                 </form>
@@ -45,6 +46,7 @@
                 <form id="addKaryaForm">
                     <input type="text" id="karyaTitle" placeholder="Judul Karya" required>
                     <textarea id="karyaDescription" placeholder="Deskripsi Karya" rows="4" required></textarea>
+                    <input type="text" id="karyaImageUrl" placeholder="URL Gambar Karya (Opsional)">
                     <button type="submit" id="karyaSubmitBtn">Tambah Karya</button>
                     <button type="button" id="cancelKaryaBtn" style="display: none;" onclick="cancelEdit('karya')">Batal</button>
                 </form>
