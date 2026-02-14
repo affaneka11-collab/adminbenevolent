@@ -6,14 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrator</title>
     <style>
-        
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .login-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 300px; }
         h2 { text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        input { width: 94%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
         button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background: #0056b3; }
         .error { color: red; text-align: center; margin-top: 10px; }
+        .divider { text-align: center; color: #ccc; margin: 20px 0; }
+        .peringatan { text-align: left; color: rgb(255, 0, 0); margin-top: 10px; font-weight: bold; font-size: 12px;}   
     </style>
 </head>
 <body>
@@ -22,13 +23,14 @@
         <form id="loginForm">
             <input type="text" id="username" placeholder="Username" required>
             <input type="password" id="password" placeholder="Password" required>
+            <p class="divider"> -------------------------- </p>
+            <h1 class="peringatan">dilarang membuat, membagikan ataupun menghapus data!</h1>
             <button type="submit">Login</button>
         </form>
         <div id="errorMessage" class="error" style="display: none;"></div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scriptlogin.js"></script>
 </body>
-
 </html>
-
