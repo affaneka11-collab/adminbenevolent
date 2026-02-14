@@ -129,8 +129,8 @@ async function loadModerators() {
                 </div>
                 <div>
                     <button class="toggle-btn ${mod.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${mod.username}')">${mod.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                    <button class="edit-btn" onclick="editModerator('${mod.username}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteModerator('${mod.username}')">Hapus</button>
+                    ${mod.editable ? `<button class="edit-btn" onclick="editModerator('${mod.username}')">Edit</button>` : ''}
+                    ${mod.editable ? `<button class="delete-btn" onclick="deleteModerator('${mod.username}')">Hapus</button>` : ''}
                 </div>
             `;
             list.appendChild(li);
@@ -159,9 +159,9 @@ async function loadAdmins() {
                     <p>Role: Admin | Status: ${adm.status_akun === 'Aktif' ? 'Aktif' : 'Nonaktif'}</p>
                 </div>
                 <div>
-                    ${adm.username !== user.username ? `<button class="toggle-btn ${adm.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${adm.username}')">${adm.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}
-                    ${adm.username !== user.username ? `<button class="edit-btn" onclick="editAdmin('${adm.username}')">Edit</button>` : ''}
-                    ${adm.username !== user.username ? `<button class="delete-btn" onclick="deleteAdmin('${adm.username}')">Hapus</button>` : '<span>(Kamu)</span>'}
+                    ${adm.username !== user.username && adm.editable ? `<button class="toggle-btn ${adm.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${adm.username}')">${adm.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}
+                    ${adm.username !== user.username && adm.editable ? `<button class="edit-btn" onclick="editAdmin('${adm.username}')">Edit</button>` : ''}
+                    ${adm.username !== user.username && adm.editable ? `<button class="delete-btn" onclick="deleteAdmin('${adm.username}')">Hapus</button>` : '<span>(Kamu)</span>'}
                 </div>
             `;
             list.appendChild(li);
@@ -370,9 +370,17 @@ async function deleteKarya(id) {
     }
 }
 
+// dashboard.js (lanjutan dari potongan sebelumnya)
+
 async function deleteModerator(username) {
     if (user.role !== "Admin") {
         alert("Akses ditolak!");
+        return;
+    }
+    // Tambahkan pengecekan editable jika ingin mencegah delete jika false
+    const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
+    if (!account.editable) {
+        alert("Akun ini tidak dapat dihapus!");
         return;
     }
     if (!confirm("Apakah Anda yakin ingin menghapus moderator ini?")) return;
@@ -388,6 +396,12 @@ async function deleteModerator(username) {
 async function deleteAdmin(username) {
     if (user.role !== "Admin" || username === user.username) {
         alert("Akses ditolak!");
+        return;
+    }
+    // Tambahkan pengecekan editable
+    const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
+    if (!account.editable) {
+        alert("Akun ini tidak dapat dihapus!");
         return;
     }
     if (!confirm("Apakah Anda yakin ingin menghapus admin ini?")) return;
