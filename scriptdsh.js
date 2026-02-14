@@ -58,6 +58,7 @@ async function loadPrestasi() {
                 li.className = 'prestasi-item';
                 li.innerHTML = `
                     <div>
+                        <img src="${item.image_url}" style="width: 50px; height: auto; border-radius: 5px; margin-right: 10px;">
                         <h3>${item.title}</h3>
                         <p>${item.description}</p>
                     </div>
@@ -92,6 +93,7 @@ async function loadKarya() {
                 li.className = 'karya-item';
                 li.innerHTML = `
                     <div>
+                        <img src="${item.image_url}" style="width: 50px; height: auto; border-radius: 5px; margin-right: 10px;">
                         <h3>${item.title}</h3>
                         <p>${item.description}</p>
                     </div>
@@ -174,6 +176,7 @@ async function editPrestasi(id) {
     try {
         const { data: item, error } = await supabaselokal.from('prestasi').select('*').eq('id', id).single();
         if (error) throw error;
+        document.getElementById('ImageUrl').value = item.image_url;
         document.getElementById('title').value = item.title;
         document.getElementById('description').value = item.description;
         document.getElementById('prestasiSubmitBtn').textContent = 'Update Prestasi';
@@ -189,6 +192,7 @@ async function editKarya(id) {
     try {
         const { data: item, error } = await supabaselokal.from('karya').select('*').eq('id', id).single();
         if (error) throw error;
+        document.getElementById('karyaImageUrl').value = item.image_url;
         document.getElementById('karyaTitle').value = item.title;
         document.getElementById('karyaDescription').value = item.description;
         document.getElementById('karyaSubmitBtn').textContent = 'Update Karya';
@@ -240,6 +244,7 @@ async function editAdmin(username) {
 
 function cancelEdit(type) {
     if (type === 'prestasi') {
+        document.getElementById('ImageUrl').value = '';
         document.getElementById('title').value = '';
         document.getElementById('description').value = '';
         document.getElementById('prestasiSubmitBtn').textContent = 'Tambah Prestasi';
@@ -247,6 +252,7 @@ function cancelEdit(type) {
         document.getElementById('cancelPrestasiBtn').style.display = 'none';
         editingPrestasiId = null;
     } else if (type === 'karya') {
+        document.getElementById('karyaImageUrl').value = '';
         document.getElementById('karyaTitle').value = '';
         document.getElementById('karyaDescription').value = '';
         document.getElementById('karyaSubmitBtn').textContent = 'Tambah Karya';
@@ -277,14 +283,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form event listeners
     document.getElementById('addForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        const imeg = document.getElementById('ImageUrl').value;
         const title = document.getElementById('title').value;
         const description = document.getElementById('description').value;
         try {
             if (editingPrestasiId) {
-                const { error } = await supabaselokal.from('prestasi').update({ title, description }).eq('id', editingPrestasiId);
+                const { error } = await supabaselokal.from('prestasi').update({ title, description, image_url: imeg }).eq('id', editingPrestasiId);
                 if (error) throw error;
             } else {
-                const { error } = await supabaselokal.from('prestasi').insert([{ title, description }]);
+                const { error } = await supabaselokal.from('prestasi').insert([{ title, description, image_url: imeg }]);
                 if (error) throw error;
             }
             cancelEdit('prestasi');
@@ -296,14 +303,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('addKaryaForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        const imeg = document.getElementById('karyaImageUrl').value;
         const title = document.getElementById('karyaTitle').value;
         const description = document.getElementById('karyaDescription').value;
         try {
             if (editingKaryaId) {
-                const { error } = await supabaselokal.from('karya').update({ title, description }).eq('id', editingKaryaId);
+                const { error } = await supabaselokal.from('karya').update({ title, description, image_url: imeg }).eq('id', editingKaryaId);
                 if (error) throw error;
             } else {
-                const { error } = await supabaselokal.from('karya').insert([{ title, description }]);
+                const { error } = await supabaselokal.from('karya').insert([{ title, description, image_url: imeg }]);
                 if (error) throw error;
             }
             cancelEdit('karya');
