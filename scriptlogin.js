@@ -21,6 +21,13 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
+    // Pengecekan CAPTCHA (asumsi menggunakan Google reCAPTCHA v2)
+    // Pastikan elemen dengan class 'g-recaptcha' ada di HTML, dan site key sudah dikonfigurasi
+    const recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+        showError("Harap lengkapi CAPTCHA!");
+        return;
+    }
 
     try {
         // Query ke tabel administrator di Supabase
@@ -33,6 +40,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
         if (error || !data) {
             showError('Username tidak ditemukan atau akun tidak aktif');
+            grecaptcha.reset();
             return;
         }
 
@@ -47,16 +55,17 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             window.location.href = 'dashboard.html';
         } else {
             showError('Password salah');
+            grecaptcha.reset();
         }
     } catch (err) {
         console.error('Error:', err);
         showError('Terjadi kesalahan. Coba lagi.');
+        grecaptcha.reset();
     }
 });
 
 // Sembunyikan error saat user mulai mengetik
 document.getElementById('username').addEventListener('input', hideError);
 document.getElementById('password').addEventListener('input', hideError);
-
 
 
