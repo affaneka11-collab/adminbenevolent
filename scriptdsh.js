@@ -1,18 +1,17 @@
-// dashboard.js
-// Inisialisasi Supabase (ganti dengan URL dan anon key dari project Supabase Anda)
-const supabaseUrl = 'https://piaycptnvkyahallyysx.supabase.co'; // Ganti dengan URL project Supabase Anda
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYXljcHRudmt5YWhhbGx5eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTIyMzcsImV4cCI6MjA4NjU4ODIzN30.ADYwz_gLL7GzsZXOvWTSLNWyaYQurR3fGQdzl7qnEWU'; // Ganti dengan anon key dari Supabase dashboard
+// scriptdsh.js
+const supabaseUrl = 'https://piaycptnvkyahallyysx.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYXljcHRudmt5YWhhbGx5eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTIyMzcsImV4cCI6MjA4NjU4ODIzN30.ADYwz_gLL7GzsZXOvWTSLNWyaYQurR3fGQdzl7qnEWU';
 const supabaselokal = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-// Ambil data user dari localStorage (dari login.js)
 const user = JSON.parse(localStorage.getItem('adminLoggedIn') ? JSON.stringify({ username: localStorage.getItem('adminName'), role: localStorage.getItem('adminRole') }) : null);
 if (!user) {
     window.location.href = "login.html";
 }
-document.querySelector('.nav-text').innerText = user.role === "Admin" ? "Admin - Kelas 8 Benevolent" : "Moderator - Kelas 8 Benevolent";
+// Hapus baris ini karena tidak ada .nav-text di HTML baru
+// document.querySelector('.nav-text').innerText = user.role === "Admin" ? "Admin - Kelas 8 Benevolent" : "Moderator - Kelas 8 Benevolent";
 document.getElementById('userName').innerText = user.username;
 if (user.role === "Admin") {
-    document.getElementById('moderatorTab').style.display = 'inline-block';
+    document.getElementById('moderatorMenu').style.display = 'block';
 }
 
 let editingPrestasiId = null;
@@ -28,9 +27,9 @@ function logout() {
 
 function showTab(tabName) {
     document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
     document.getElementById(tabName + '-section').classList.add('active');
-    event.target.classList.add('active');
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
     const titles = { prestasi: 'Kelola Prestasi', karya: 'Kelola Karya Siswa', moderator: 'Kelola Moderator' };
     document.getElementById('pageTitle').innerText = titles[tabName];
     if (tabName === 'prestasi') loadPrestasi();
@@ -161,7 +160,7 @@ async function loadAdmins() {
                 <div>
                     ${adm.username !== user.username && adm.editable ? `<button class="toggle-btn ${adm.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${adm.username}')">${adm.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}
                     ${adm.username !== user.username && adm.editable ? `<button class="edit-btn" onclick="editAdmin('${adm.username}')">Edit</button>` : ''}
-                    ${adm.username !== user.username && adm.editable ? `<button class="delete-btn" onclick="deleteAdmin('${adm.username}')">Hapus</button>` : '<span>(Can`t Edited)</span>'}
+                    ${adm.username !== user.username && adm.editable ? `<button class="delete-btn" onclick="deleteAdmin('${adm.username}')">Hapus</button>` : '<span>(Kamu)</span>'}
                 </div>
             `;
             list.appendChild(li);
@@ -265,86 +264,106 @@ function cancelEdit(type) {
     }
 }
 
-document.getElementById('addForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const title = document.getElementById('title').value;
-    const description = document.getElementById('description').value;
-    try {
-        if (editingPrestasiId) {
-            const { error } = await supabaselokal.from('prestasi').update({ title, description }).eq('id', editingPrestasiId);
-            if (error) throw error;
-        } else {
-            const { error } = await supabaselokal.from('prestasi').insert([{ title, description }]);
-            if (error) throw error;
-        }
-        cancelEdit('prestasi');
-        loadPrestasi();
-    } catch (error) {
-        console.error('Error saving prestasi:', error);
-    }
-});
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener untuk sidebar links
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tab = this.getAttribute('data-tab');
+            showTab(tab);
+        });
+    });
 
-document.getElementById('addKaryaForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const title = document.getElementById('karyaTitle').value;
-    const description = document.getElementById('karyaDescription').value;
-    try {
-        if (editingKaryaId) {
-            const { error } = await supabaselokal.from('karya').update({ title, description }).eq('id', editingKaryaId);
-            if (error) throw error;
-        } else {
-            const { error } = await supabaselokal.from('karya').insert([{ title, description }]);
-            if (error) throw error;
+    // Form event listeners
+    document.getElementById('addForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        try {
+            if (editingPrestasiId) {
+                const { error } = await supabaselokal.from('prestasi').update({ title, description }).eq('id', editingPrestasiId);
+                if (error) throw error;
+            } else {
+                const { error } = await supabaselokal.from('prestasi').insert([{ title, description }]);
+                if (error) throw error;
+            }
+            cancelEdit('prestasi');
+            loadPrestasi();
+        } catch (error) {
+            console.error('Error saving prestasi:', error);
         }
-        cancelEdit('karya');
-        loadKarya();
-    } catch (error) {
-        console.error('Error saving karya:', error);
-    }
-});
+    });
 
-document.getElementById('addModForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (user.role !== "Admin") {
-        alert("Akses ditolak!");
-        return;
-    }
-    const username = document.getElementById('modUsername').value;
-    const password = document.getElementById('modPassword').value;
-    const active = document.getElementById('modActive').checked ? 'Aktif' : 'Tidak Aktif';
-    try {
-        if (editingModUsername) {
-            const { error } = await supabaselokal.from('administrator').update({ password, peran: 'Moderator', status_akun: active }).eq('username', editingModUsername);
-            if (error) throw error;
-        } else {
-            const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Moderator', status_akun: active, editable: true }]);
-            if (error) throw error;
+    document.getElementById('addKaryaForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const title = document.getElementById('karyaTitle').value;
+        const description = document.getElementById('karyaDescription').value;
+        try {
+            if (editingKaryaId) {
+                const { error } = await supabaselokal.from('karya').update({ title, description }).eq('id', editingKaryaId);
+                if (error) throw error;
+            } else {
+                const { error } = await supabaselokal.from('karya').insert([{ title, description }]);
+                if (error) throw error;
+            }
+            cancelEdit('karya');
+            loadKarya();
+        } catch (error) {
+            console.error('Error saving karya:', error);
         }
-        cancelEdit('moderator');
+    });
+
+    document.getElementById('addModForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (user.role !== "Admin") {
+            alert("Akses ditolak!");
+            return;
+        }
+        const username = document.getElementById('modUsername').value;
+        const password = document.getElementById('modPassword').value;
+        const active = document.getElementById('modActive').checked ? 'Aktif' : 'Tidak Aktif';
+        try {
+            if (editingModUsername) {
+                const { error } = await supabaselokal.from('administrator').update({ password, peran: 'Moderator', status_akun: active }).eq('username', editingModUsername);
+                if (error) throw error;
+            } else {
+                const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Moderator', status_akun: active, editable: true }]);
+                if (error) throw error;
+            }
+            cancelEdit('moderator');
+            loadModerators();
+            loadAdmins();
+        } catch (error) {
+            console.error('Error saving moderator:', error);
+        }
+    });
+
+    document.getElementById('addAdminBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        if (user.role !== "Admin") {
+            alert("Akses ditolak!");
+            return;
+        }
+        const username = document.getElementById('modUsername').value;
+        const password = document.getElementById('modPassword').value;
+        try {
+            const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Admin', status_akun: 'Aktif', editable: true }]);
+            if (error) throw error;
+            document.getElementById('modUsername').value = '';
+            document.getElementById('modPassword').value = '';
+            document.getElementById('modActive').checked = true;
+            loadAdmins();
+        } catch (error) {
+            console.error('Error adding admin:', error);
+        }
+    });
+
+    // Load initial data
+    loadPrestasi();
+    loadKarya();
+    if (user.role === "Admin") {
         loadModerators();
         loadAdmins();
-    } catch (error) {
-        console.error('Error saving moderator:', error);
-    }
-});
-
-document.getElementById('addAdminBtn').addEventListener('click', async function(e) {
-    e.preventDefault();
-    if (user.role !== "Admin") {
-        alert("Akses ditolak!");
-        return;
-    }
-    const username = document.getElementById('modUsername').value;
-    const password = document.getElementById('modPassword').value;
-    try {
-        const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Admin', status_akun: 'Aktif', editable: true }]);
-        if (error) throw error;
-        document.getElementById('modUsername').value = '';
-        document.getElementById('modPassword').value = '';
-        document.getElementById('modActive').checked = true;
-        loadAdmins();
-    } catch (error) {
-        console.error('Error adding admin:', error);
     }
 });
 
@@ -369,15 +388,13 @@ async function deleteKarya(id) {
         console.error('Error deleting karya:', error);
     }
 }
-
-// dashboard.js (lanjutan dari potongan sebelumnya)
+// scriptdsh.js (lanjutan dari baris 391)
 
 async function deleteModerator(username) {
     if (user.role !== "Admin") {
         alert("Akses ditolak!");
         return;
     }
-    // Tambahkan pengecekan editable jika ingin mencegah delete jika false
     const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
     if (!account.editable) {
         alert("Akun ini tidak dapat dihapus!");
@@ -398,7 +415,6 @@ async function deleteAdmin(username) {
         alert("Akses ditolak!");
         return;
     }
-    // Tambahkan pengecekan editable
     const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
     if (!account.editable) {
         alert("Akun ini tidak dapat dihapus!");
@@ -431,12 +447,3 @@ async function toggleActive(username) {
         console.error('Error toggling active:', error);
     }
 }
-
-window.onload = function() {
-    loadPrestasi();
-    loadKarya();
-    if (user.role === "Admin") {
-        loadModerators();
-        loadAdmins();
-    }
-};
