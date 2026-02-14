@@ -213,6 +213,7 @@ async function editModerator(username) {
         const { data: account, error } = await supabaselokal.from('administrator').select('*').eq('username', username).single();
         if (error) throw error;
         document.getElementById('modUsername').value = account.username;
+        document.getElementById('modPassword').value = account.password;
         document.getElementById('modActive').checked = account.status_akun === 'Aktif';
         document.getElementById('modSubmitBtn').textContent = 'Update Moderator';
         document.getElementById('modFormTitle').textContent = 'Edit Moderator';
@@ -366,6 +367,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+        // Event listener untuk form update password
+    document.getElementById('updatePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await ubahPassword(user.username);
+    });
+
     // Load initial data
     loadPrestasi();
     loadKarya();
@@ -396,7 +403,6 @@ async function deleteKarya(id) {
         console.error('Error deleting karya:', error);
     }
 }
-// scriptdsh.js (lanjutan dari baris 391)
 
 async function deleteModerator(username) {
     if (user.role !== "Admin") {
@@ -453,5 +459,69 @@ async function toggleActive(username) {
         loadAdmins();
     } catch (error) {
         console.error('Error toggling active:', error);
+    }
+}
+
+// Fungsi untuk mengganti password untuk semua user (password milik akun sendiri)
+async function ubahPassword(username) {
+    // Periksa apakah username yang dimasukkan cocok dengan username pengguna saat ini
+    if (user.username !== username) {
+        alert("Akses ditolak!");
+        return;
+    }
+
+    const passwordInput = document.getElementById('currentPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+
+    if (!passwordInput.value || !newPasswordInput.value) {
+        alert("Harap isi password saat ini dan password baru!");
+        return;
+    }
+
+    if (newPasswordInput.value.length < 8) {
+        alert("Password baru harus minimal 8 karakter!");
+        return;
+    }
+
+    // Pengecekan CAPTCHA (asumsi menggunakan Google reCAPTCHA v2)
+    // Pastikan elemen dengan id 'recaptcha' ada di HTML, dan site key sudah dikonfigurasi
+    const recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+        alert("Harap lengkapi CAPTCHA!");
+        return;
+    }
+
+    try {
+        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', username).single();
+        if (error) throw error;
+
+        if (passwordInput.value !== account.password) {
+            alert("Password salah!");
+            return;
+        }
+
+        if (editingModUsername) {
+            const { error } = await supabaselokal.from('administrator').update({ 
+                password: newPasswordInput.value, 
+                peran: 'Moderator', 
+                status_akun: active 
+            }).eq('username', editingModUsername);
+            if (error) throw error;
+            alert("Password moderator berhasil diubah!");
+        } else {
+            const { error } = await supabaselokal.from('administrator').update({ 
+                password: newPasswordInput.value 
+            }).eq('username', username);
+            if (error) throw error;
+            alert("Password berhasil diubah!");
+        }
+
+        passwordInput.value = '';
+        newPasswordInput.value = '';
+        grecaptcha.reset(); // Reset CAPTCHA setelah sukses
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat mengubah password. Silakan coba lagi.');
     }
 }
