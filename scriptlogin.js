@@ -24,7 +24,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     try {
         // Query ke tabel administrator di Supabase
-        const { data, error } = await supabase
+        const { data, error } = await supabaselokal
             .from('administrator')
             .select('*')
             .eq('username', username)
@@ -57,5 +57,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 // Sembunyikan error saat user mulai mengetik
 document.getElementById('username').addEventListener('input', hideError);
 document.getElementById('password').addEventListener('input', hideError);
+
 
 
