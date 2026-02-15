@@ -11,7 +11,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background: linear-gradient(to bottom, #8e2de2, #4a00e0, #ff0080); /* Gradasi ungu-violet-pink */
+    background: linear-gradient(to bottom, #8e2de2, #4a00e0, #bc00af); /* Gradasi ungu-violet-pink */
     color: white;
     position: fixed;
     top: 0;
@@ -21,6 +21,12 @@ body {
     flex-direction: column;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     z-index: 100;
+}
+.nav-section-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 20px 0 10px 20px;
+    color: rgba(255,255,255,0.7);
 }
 
 .sidebar-header {
@@ -64,6 +70,11 @@ body {
     padding: 20px;
     border-top: 1px solid rgba(255,255,255,0.2);
     text-align: center;
+}
+.sidebar-divider {
+    height: 1px;
+    background-color: rgba(255,255,255,0.2);
+    margin: 10px 0;
 }
 
 .user-profile {
