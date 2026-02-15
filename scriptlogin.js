@@ -49,6 +49,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             // Login berhasil - Simpan data ke localStorage (simulasi session)
             localStorage.setItem('adminLoggedIn', 'true');
             localStorage.setItem('adminName', data.nama_administrator);
+            localStorage.setItem('adminUsername', data.username);
             localStorage.setItem('adminRole', data.peran);
 
             // Redirect ke dashboard
@@ -67,5 +68,3 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 // Sembunyikan error saat user mulai mengetik
 document.getElementById('username').addEventListener('input', hideError);
 document.getElementById('password').addEventListener('input', hideError);
-
-
