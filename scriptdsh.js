@@ -519,7 +519,8 @@ async function ubahPassword(username) {
             password: newPasswordInput.value 
         }).eq('username', username);
         if (updateError) throw updateError;
-        alert("Password berhasil diubah!");
+            alert("Password berhasil diubah! Silahkan Login ulang.");
+            logout(); // Logout setelah ganti password untuk keamanan
 
         passwordInput.value = '';
         newPasswordInput.value = '';
