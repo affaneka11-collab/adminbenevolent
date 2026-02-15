@@ -494,9 +494,9 @@ async function ubahPassword(username) {
 
     try {
         // Gunakan .maybeSingle() untuk menghindari error jika tidak ada data
-        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', user.username).maybeSingle();
+        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', username).maybeSingle();
         if (error) throw error;
-        if (!account) {
+        if (account === null) {
             alert("Akun tidak ditemukan. Silakan login ulang.");
             grecaptcha.reset();
             return;
