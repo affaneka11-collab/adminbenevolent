@@ -493,15 +493,20 @@ async function ubahPassword(username) {
     }
 
     try {
-        // Gunakan .maybeSingle() untuk menghindari error jika tidak ada data
-        const { data: account, error } = await supabaselokal.from('administrator').select('password').eq('username', username).maybeSingle();
+        // Gunakan query tanpa .maybeSingle() untuk menghindari potensi error, dan handle array secara manual
+        const { data: accounts, error } = await supabaselokal.from('administrator').select('password').eq('username', username);
         if (error) throw error;
-        if (account === null) {
+        
+        // Periksa apakah akun ditemukan
+        if (!accounts || accounts.length === 0) {
             alert("Akun tidak ditemukan. Silakan login ulang.");
             grecaptcha.reset();
             return;
         }
-
+        
+        // Ambil akun pertama (seharusnya hanya satu berdasarkan eq('username', username))
+        const account = accounts[0];
+        
         if (passwordInput.value !== account.password) {
             alert("Password salah!");
             grecaptcha.reset();
