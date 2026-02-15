@@ -3,13 +3,13 @@ const supabaseUrl = 'https://piaycptnvkyahallyysx.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYXljcHRudmt5YWhhbGx5eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTIyMzcsImV4cCI6MjA4NjU4ODIzN30.ADYwz_gLL7GzsZXOvWTSLNWyaYQurR3fGQdzl7qnEWU';
 const supabaselokal = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-const user = JSON.parse(localStorage.getItem('adminLoggedIn') ? JSON.stringify({ username: localStorage.getItem('adminName'), role: localStorage.getItem('adminRole') }) : null);
+const user = JSON.parse(localStorage.getItem('adminLoggedIn') ? JSON.stringify({ username: localStorage.getItem('adminUsername'), role: localStorage.getItem('adminRole'), name: localStorage.getItem('adminName') }) : null);
 if (!user) {
     window.location.href = "login.html";
 }
 // Hapus baris ini karena tidak ada .nav-text di HTML baru
 // document.querySelector('.nav-text').innerText = user.role === "Admin" ? "Admin - Kelas 8 Benevolent" : "Moderator - Kelas 8 Benevolent";
-document.getElementById('userName').innerText = user.username;
+document.getElementById('userName').innerText = user.name;
 if (user.role === "Admin") {
     document.getElementById('moderatorMenu').style.display = 'block';
 }
@@ -21,6 +21,7 @@ let editingModUsername = null;
 function logout() {
     localStorage.removeItem('adminLoggedIn');
     localStorage.removeItem('adminName');
+     localStorage.removeItem('adminUsername');
     localStorage.removeItem('adminRole');
     window.location.href = "login.html";
 }
