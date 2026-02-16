@@ -31,8 +31,10 @@
             </ul>
         </div>
         <div class="sidebar-footer">
-            <span class="user-profile">Welcome, <span id="userName"></span></span>
-            <a href="#" onclick="logout()">🚪 Logout</a>
+            <span class="welcome">Welcome, <span id="userName" class="nama"></span></span>
+        </div>
+        <div class="btn" style="width: fit-content; align-self: center; background-color: rgb(179, 0, 0);">
+            <a href="#" onclick="logout()" style="text-decoration: none; color: white; font-weight: 600;">🚪 Logout</a>
         </div>
     </aside>
     <main class="main-content">
@@ -44,8 +46,8 @@
                     <input type="text" id="title" placeholder="Judul Prestasi" required>
                     <textarea id="description" placeholder="Deskripsi Prestasi" rows="4" required></textarea>
                     <input type="text" id="ImageUrl" placeholder="URL Gambar Karya (Opsional)">
-                    <button type="submit" id="prestasiSubmitBtn">Tambah Prestasi</button>
-                    <button type="button" id="cancelPrestasiBtn" style="display: none;" onclick="cancelEdit('prestasi')">Batal</button>
+                    <button type="submit" id="prestasiSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Prestasi</button>
+                    <button type="button" id="cancelPrestasiBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('prestasi')">Batal</button>
                 </form>
                 <h3>Daftar Prestasi</h3>
                 <ul class="prestasi-list" id="prestasiList"></ul>
@@ -57,8 +59,8 @@
                     <input type="text" id="karyaTitle" placeholder="Judul Karya" required>
                     <textarea id="karyaDescription" placeholder="Deskripsi Karya" rows="4" required></textarea>
                     <input type="text" id="karyaImageUrl" placeholder="URL Gambar Karya (Opsional)">
-                    <button type="submit" id="karyaSubmitBtn">Tambah Karya</button>
-                    <button type="button" id="cancelKaryaBtn" style="display: none;" onclick="cancelEdit('karya')">Batal</button>
+                    <button type="submit" id="karyaSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Karya</button>
+                    <button type="button" id="cancelKaryaBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('karya')">Batal</button>
                 </form>
                 <h3>Daftar Karya Siswa</h3>
                 <ul class="karya-list" id="karyaList"></ul>
@@ -69,10 +71,14 @@
                 <form id="addModForm">
                     <input type="text" id="modUsername" placeholder="Username Moderator" required>
                     <input type="password" id="modPassword" placeholder="Password Moderator" required>
-                    <span><input type="checkbox" id="modActive" checked> Aktif </span>
-                    <button type="submit" id="modSubmitBtn">Tambahkan sebagai Moderator</button>
-                    <button type="button" id="addAdminBtn">Tambahkan sebagai Admin</button>
-                    <button type="button" id="cancelModBtn" style="display: none;" onclick="cancelEdit('moderator')">Batal</button>
+                    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px;" class="waperkontener">
+                        <input type="checkbox" id="modActive">
+                        <label for="modActive" class="checkbox-label"></label>
+                        <span>Active</span>
+                    </div>
+                    <button type="submit" id="modSubmitBtn" style="background-color: rgb(1, 1, 152);">Tambahkan sebagai Moderator</button>
+                    <button type="button" id="addAdminBtn" style="background-color: rgb(179, 98, 0);">Tambahkan sebagai Admin</button>
+                    <button type="button" id="cancelModBtn" style="display: none; background-color: rgb(187, 0, 0);" onclick="cancelEdit('moderator')">Batal</button>
                 </form>
                 <h4>Daftar Moderator</h4>
                 <ul class="moderator-list" id="moderatorList"></ul>
