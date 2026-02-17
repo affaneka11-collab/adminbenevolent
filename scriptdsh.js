@@ -283,6 +283,7 @@ function cancelEdit(type) {
         if (document.getElementById('modUsername')) document.getElementById('modUsername').value = '';
         if (document.getElementById('modPassword')) document.getElementById('modPassword').value = '';
         if (document.getElementById('modActive')) document.getElementById('modActive').checked = true;
+        if (document.getElementById('addAdminBtn')) document.getElementById('addAdminBtn').className = '';
         if (document.getElementById('modSubmitBtn')) document.getElementById('modSubmitBtn').textContent = 'Tambahkan sebagai Moderator';
         if (document.getElementById('modFormTitle')) document.getElementById('modFormTitle').textContent = 'Kelola Moderator';
         if (document.getElementById('cancelModBtn')) document.getElementById('cancelModBtn').style.display = 'none';
@@ -560,3 +561,4 @@ async function ubahPassword(username) {
         grecaptcha.reset();
     }
 }
+
