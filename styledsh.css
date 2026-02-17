@@ -21,6 +21,12 @@ body {
     flex-direction: column;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     z-index: 100;
+    overflow-x: hidden;
+    overflow-y: visible;
+    scrollbar-width: thin;
+    scrollbar-base-color: transparent;
+    scroll-behavior: smooth;
+    scrollbar-color: transparent transparent;
 }
 .nav-section-title {
     font-size: 14px;
