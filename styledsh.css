@@ -316,7 +316,75 @@ footer {
     background-color: transparent;
     margin-top: auto;
 }
+/* Styling untuk daftar siswa */
+.siswa-list {
+    list-style: none;
+    padding: 0;
+}
 
+.siswa-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.siswa-item h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.siswa-item p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.aksi-container {
+    position: relative;
+}
+
+.aksi-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.aksi-btn:hover {
+    background: #0056b3;
+}
+
+.aksi-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 10;
+    min-width: 100px;
+}
+
+.aksi-menu button {
+    display: block;
+    color: #333;
+    width: 100%;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.aksi-menu button:hover {
+    background: #f0f0f0;
+}
 @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
