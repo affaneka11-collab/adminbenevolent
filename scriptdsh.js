@@ -1,534 +1,333 @@
-// scriptdsh.js
-const supabaseUrl = 'https://piaycptnvkyahallyysx.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYXljcHRudmt5YWhhbGx5eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTIyMzcsImV4cCI6MjA4NjU4ODIzN30.ADYwz_gLL7GzsZXOvWTSLNWyaYQurR3fGQdzl7qnEWU';
-const supabaselokal = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-const user = JSON.parse(localStorage.getItem('adminLoggedIn') ? JSON.stringify({ username: localStorage.getItem('adminUsername'), role: localStorage.getItem('adminRole'), name: localStorage.getItem('adminName') }) : null);
-if (!user) {
-    window.location.href = "login.html";
-}
-// Hapus baris ini karena tidak ada .nav-text di HTML baru
-// document.querySelector('.nav-text').innerText = user.role === "Admin" ? "Admin - Kelas 8 Benevolent" : "Moderator - Kelas 8 Benevolent";
-document.getElementById('userName').innerText = user.name;
-if (user.role === "Admin") {
-    document.getElementById('moderatorMenu').style.display = 'block';
+/* styledsh.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    overflow-x: hidden;
+    display: flex;
+    min-height: 100vh;
 }
 
-let editingPrestasiId = null;
-let editingKaryaId = null;
-let editingModUsername = null;
-
-function logout() {
-    localStorage.removeItem('adminLoggedIn');
-    localStorage.removeItem('adminName');
-     localStorage.removeItem('adminUsername');
-    localStorage.removeItem('adminRole');
-    window.location.href = "login.html";
+.sidebar {
+    width: 250px;
+    background: linear-gradient(to bottom, #8e2de2, #4a00e0, #bc00af); /* Gradasi ungu-violet-pink */
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+.nav-section-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 20px 0 10px 20px;
+    color: rgba(255,255,255,0.7);
 }
 
-function showTab(tabName) {
-    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
-    document.getElementById(tabName + '-section').classList.add('active');
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    const titles = { prestasi: 'Kelola Prestasi', karya: 'Kelola Karya Siswa', moderator: 'Kelola Moderator' };
-    document.getElementById('pageTitle').innerText = titles[tabName];
-    if (tabName === 'prestasi') loadPrestasi();
-    else if (tabName === 'karya') loadKarya();
-    else if (tabName === 'moderator' && user.role === "Admin") {
-        loadModerators();
-        loadAdmins();
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.sidebar-logo {
+    width: 60px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.sidebar-nav li {
+    margin: 10px 0;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    background: rgba(255,255,255,0.2);
+    border-left: 4px solid #fff;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+.sidebar-divider {
+    height: 1px;
+    background-color: rgba(255,255,255,0.2);
+    margin: 10px 0;
+}
+
+.user-profile {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    background-color: #fff;
+    max-width: calc(100% - 250px);
+    width: 100%;
+}
+
+.warpper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.tabs {
+    display: none; /* Sembunyikan tabs karena menggunakan sidebar */
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+button, input[type="button"], .btn {
+    color: #fffdfd;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin: 5px 0;
+    cursor: pointer;
+    pointer-events: auto;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+input[type="button"]:hover, .btn:hover, button:hover {
+    filter: brightness(0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+/* Custom checkbox styling */
+input[type="checkbox"] {
+    display: none; /* Sembunyikan checkbox asli */
+}
+.notallowed {
+    pointer-events: none;
+    opacity: 0.6;
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.checkbox-label {
+    position: relative;
+    cursor: pointer;
+    bottom: 5px;
+    left: 5px;
+    width: 10px;
+    height: 20px;
+    border: 2px solid #333; /* Warna border default */
+    border-radius: 25px; /* Membuatnya bulat */
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-right: 10px; /* Jarak dengan teks */
+}
+
+input[type="checkbox"]:checked + .checkbox-label::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: #007bff; /* Warna titik saat checked */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: check 0.3s ease;
+}
+
+.checkbox-label:hover {
+    border-color: #007bff; /* Warna border saat hover */
+}
+span {
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+    padding-right: 10px;
+}
+.nama {
+    font-weight: 700;
+    color: #ffffff;
+}
+.welcome {
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+@keyframes check {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
     }
-}
-
-async function loadPrestasi() {
-    try {
-        console.log('Loading prestasi...');
-        const { data: prestasi, error } = await supabaselokal.from('prestasi').select('*');
-        if (error) throw error;
-        console.log('Prestasi data:', prestasi);
-        const list = document.getElementById('prestasiList');
-        const noPrestasi = document.getElementById('noPrestasi');
-        list.innerHTML = '';
-        if (prestasi.length === 0) {
-            noPrestasi.style.display = 'block';
-        } else {
-            noPrestasi.style.display = 'none';
-            prestasi.forEach((item) => {
-                const li = document.createElement('li');
-                li.className = 'prestasi-item';
-                li.innerHTML = `
-                    <div>
-                        <img src="${item.image_url}" style="width: 50px; height: auto; border-radius: 5px; margin-right: 10px;">
-                        <h3>${item.title}</h3>
-                        <p>${item.description}</p>
-                    </div>
-                    <div>
-                        <button class="edit-btn" onclick="editPrestasi(${item.id})">Edit</button>
-                        <button class="delete-btn" onclick="deletePrestasi(${item.id})">Hapus</button>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading prestasi:', error);
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
     }
-}
-
-async function loadKarya() {
-    try {
-        console.log('Loading karya...');
-        const { data: karya, error } = await supabaselokal.from('karya').select('*');
-        if (error) throw error;
-        console.log('Karya data:', karya);
-        const list = document.getElementById('karyaList');
-        const noKarya = document.getElementById('noKarya');
-        list.innerHTML = '';
-        if (karya.length === 0) {
-            noKarya.style.display = 'block';
-        } else {
-            noKarya.style.display = 'none';
-            karya.forEach((item) => {
-                const li = document.createElement('li');
-                li.className = 'karya-item';
-                li.innerHTML = `
-                    <div>
-                        <img src="${item.image_url}" style="width: 50px; height: auto; border-radius: 5px; margin-right: 10px;">
-                        <h3>${item.title}</h3>
-                        <p>${item.description}</p>
-                    </div>
-                    <div>
-                        <button class="edit-btn" onclick="editKarya(${item.id})">Edit</button>
-                        <button class="delete-btn" onclick="deleteKarya(${item.id})">Hapus</button>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading karya:', error);
-    }
-}
-
-async function loadModerators() {
-    if (user.role !== "Admin") return;
-    try {
-        console.log('Loading moderators...');
-        const { data: accounts, error } = await supabaselokal.from('administrator').select('*');
-        if (error) throw error;
-        console.log('Accounts data:', accounts);
-        const mods = accounts.filter(acc => acc.peran === "Moderator");
-        const list = document.getElementById('moderatorList');
-        list.innerHTML = '';
-        mods.forEach((mod) => {
-            const li = document.createElement('li');
-            li.className = 'moderator-item';
-            li.innerHTML = `
-                <div>
-                    <h3>${mod.username}</h3>
-                    <p>Role: Moderator | Status: ${mod.status_akun === 'Aktif' ? 'Aktif' : 'Nonaktif'}</p>
-                </div>
-                <div>
-                    <button class="toggle-btn ${mod.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${mod.username}')">${mod.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                    ${mod.editable ? `<button class="edit-btn" onclick="editModerator('${mod.username}')">Edit</button>` : ''}
-                    ${mod.editable ? `<button class="delete-btn" onclick="deleteModerator('${mod.username}')">Hapus</button>` : ''}
-                </div>
-            `;
-            list.appendChild(li);
-        });
-    } catch (error) {
-        console.error('Error loading moderators:', error);
-    }
-}
-
-async function loadAdmins() {
-    if (user.role !== "Admin") return;
-    try {
-        console.log('Loading admins...');
-        const { data: accounts, error } = await supabaselokal.from('administrator').select('*');
-        if (error) throw error;
-        console.log('Accounts data:', accounts);
-        const admins = accounts.filter(acc => acc.peran === "Admin");
-        const list = document.getElementById('adminList');
-        list.innerHTML = '';
-        admins.forEach((adm) => {
-            const li = document.createElement('li');
-            li.className = 'admin-item';
-            li.innerHTML = `
-                <div>
-                    <h3>${adm.username}</h3>
-                    <p>Role: Admin | Status: ${adm.status_akun === 'Aktif' ? 'Aktif' : 'Nonaktif'}</p>
-                </div>
-                <div>
-                    ${adm.username !== user.username && adm.editable ? `<button class="toggle-btn ${adm.status_akun === 'Aktif' ? '' : 'inactive'}" onclick="toggleActive('${adm.username}')">${adm.status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}
-                    ${adm.username !== user.username && adm.editable ? `<button class="edit-btn" onclick="editAdmin('${adm.username}')">Edit</button>` : ''}
-                    ${adm.username !== user.username && adm.editable ? `<button class="delete-btn" onclick="deleteAdmin('${adm.username}')">Hapus</button>` : '<span>(Kamu)</span>'}
-                </div>
-            `;
-            list.appendChild(li);
-        });
-    } catch (error) {
-        console.error('Error loading admins:', error);
-    }
-}
-
-async function editPrestasi(id) {
-    try {
-        const { data: item, error } = await supabaselokal.from('prestasi').select('*').eq('id', id).single();
-        if (error) throw error;
-        document.getElementById('ImageUrl').value = item.image_url;
-        document.getElementById('title').value = item.title;
-        document.getElementById('description').value = item.description;
-        document.getElementById('prestasiSubmitBtn').textContent = 'Update Prestasi';
-        document.getElementById('prestasiFormTitle').textContent = 'Edit Prestasi';
-        document.getElementById('cancelPrestasiBtn').style.display = 'inline-block';
-        editingPrestasiId = id;
-    } catch (error) {
-        console.error('Error fetching prestasi:', error);
-    }
-}
-
-async function editKarya(id) {
-    try {
-        const { data: item, error } = await supabaselokal.from('karya').select('*').eq('id', id).single();
-        if (error) throw error;
-        document.getElementById('karyaImageUrl').value = item.image_url;
-        document.getElementById('karyaTitle').value = item.title;
-        document.getElementById('karyaDescription').value = item.description;
-        document.getElementById('karyaSubmitBtn').textContent = 'Update Karya';
-        document.getElementById('karyaFormTitle').textContent = 'Edit Karya Siswa';
-        document.getElementById('cancelKaryaBtn').style.display = 'inline-block';
-        editingKaryaId = id;
-    } catch (error) {
-        console.error('Error fetching karya:', error);
+    100% {
+        transform: translate(-50%, -50%) scale(1);
     }
 }
 
-async function editModerator(username) {
-    if (user.role !== "Admin") {
-        alert("Akses ditolak!");
-        return;
-    }
-    try {
-        const { data: account, error } = await supabaselokal.from('administrator').select('*').eq('username', username).single();
-        if (error) throw error;
-        document.getElementById('modUsername').value = account.username;
-        document.getElementById('modPassword').value = account.password;
-        document.getElementById('modActive').checked = account.status_akun === 'Aktif';
-        document.getElementById('modSubmitBtn').textContent = 'Update Moderator';
-        document.getElementById('modFormTitle').textContent = 'Edit Moderator';
-        document.getElementById('cancelModBtn').style.display = 'inline-block';
-        editingModUsername = username;
-    } catch (error) {
-        console.error('Error fetching moderator:', error);
-    }
+label {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 700;
+    padding-left: 10px;
+}
+.waperkontener {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 2px solid #8e8e8e;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
 }
 
-async function editAdmin(username) {
-    if (user.role !== "Admin" || username === user.username) {
-        alert("Akses ditolak!");
-        return;
-    }
-    try {
-        const { data: account, error } = await supabaselokal.from('administrator').select('*').eq('username', username).single();
-        if (error) throw error;
-        document.getElementById('modUsername').value = account.username;
-        document.getElementById('modActive').checked = account.status_akun === 'Aktif';
-        document.getElementById('modSubmitBtn').textContent = 'Update Admin';
-        document.getElementById('modFormTitle').textContent = 'Edit Admin';
-        document.getElementById('cancelModBtn').style.display = 'inline-block';
-        editingModUsername = username;
-    } catch (error) {
-        console.error('Error fetching admin:', error);
-    }
+input, textarea {
+    width: 98%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
-function cancelEdit(type) {
-    if (type === 'prestasi') {
-        document.getElementById('ImageUrl').value = '';
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('prestasiSubmitBtn').textContent = 'Tambah Prestasi';
-        document.getElementById('prestasiFormTitle').textContent = 'Tambah Prestasi Baru';
-        document.getElementById('cancelPrestasiBtn').style.display = 'none';
-        editingPrestasiId = null;
-    } else if (type === 'karya') {
-        document.getElementById('karyaImageUrl').value = '';
-        document.getElementById('karyaTitle').value = '';
-        document.getElementById('karyaDescription').value = '';
-        document.getElementById('karyaSubmitBtn').textContent = 'Tambah Karya';
-        document.getElementById('karyaFormTitle').textContent = 'Tambah Karya Siswa Baru';
-        document.getElementById('cancelKaryaBtn').style.display = 'none';
-        editingKaryaId = null;
-    } else if (type === 'moderator') {
-        document.getElementById('modUsername').value = '';
-        document.getElementById('modPassword').value = '';
-        document.getElementById('modActive').checked = true;
-        document.getElementById('modSubmitBtn').textContent = 'Tambahkan sebagai Moderator';
-        document.getElementById('modFormTitle').textContent = 'Kelola Moderator';
-        document.getElementById('cancelModBtn').style.display = 'none';
-        editingModUsername = null;
-    }
+.prestasi-list, .moderator-list, .karya-list, .admin-list {
+    list-style: none;
+    padding: 0;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Event listener untuk sidebar links
-    document.querySelectorAll('.sidebar-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tab = this.getAttribute('data-tab');
-            showTab(tab);
-        });
-    });
-
-    // Form event listeners
-    document.getElementById('addForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const imeg = document.getElementById('ImageUrl').value;
-        const title = document.getElementById('title').value;
-        const description = document.getElementById('description').value;
-        try {
-            if (editingPrestasiId) {
-                const { error } = await supabaselokal.from('prestasi').update({ title, description, image_url: imeg }).eq('id', editingPrestasiId);
-                if (error) throw error;
-            } else {
-                const { error } = await supabaselokal.from('prestasi').insert([{ title, description, image_url: imeg }]);
-                if (error) throw error;
-            }
-            cancelEdit('prestasi');
-            loadPrestasi();
-        } catch (error) {
-            console.error('Error saving prestasi:', error);
-        }
-    });
-
-    document.getElementById('addKaryaForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const imeg = document.getElementById('karyaImageUrl').value;
-        const title = document.getElementById('karyaTitle').value;
-        const description = document.getElementById('karyaDescription').value;
-        try {
-            if (editingKaryaId) {
-                const { error } = await supabaselokal.from('karya').update({ title, description, image_url: imeg }).eq('id', editingKaryaId);
-                if (error) throw error;
-            } else {
-                const { error } = await supabaselokal.from('karya').insert([{ title, description, image_url: imeg }]);
-                if (error) throw error;
-            }
-            cancelEdit('karya');
-            loadKarya();
-        } catch (error) {
-            console.error('Error saving karya:', error);
-        }
-    });
-
-    document.getElementById('addModForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        if (user.role !== "Admin") {
-            alert("Akses ditolak!");
-            return;
-        }
-        const username = document.getElementById('modUsername').value;
-        const password = document.getElementById('modPassword').value;
-        const active = document.getElementById('modActive').checked ? 'Aktif' : 'Tidak Aktif';
-        try {
-            if (editingModUsername) {
-                const { error } = await supabaselokal.from('administrator').update({ password, peran: 'Moderator', status_akun: active }).eq('username', editingModUsername);
-                if (error) throw error;
-            } else {
-                const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Moderator', status_akun: active, editable: true }]);
-                if (error) throw error;
-            }
-            cancelEdit('moderator');
-            loadModerators();
-            loadAdmins();
-        } catch (error) {
-            console.error('Error saving moderator:', error);
-        }
-    });
-
-    document.getElementById('addAdminBtn').addEventListener('click', async function(e) {
-        e.preventDefault();
-        if (user.role !== "Admin") {
-            alert("Akses ditolak!");
-            return;
-        }
-        const username = document.getElementById('modUsername').value;
-        const password = document.getElementById('modPassword').value;
-        try {
-            const { error } = await supabaselokal.from('administrator').insert([{ nama_administrator: username, username, password, peran: 'Admin', status_akun: 'Aktif', editable: true }]);
-            if (error) throw error;
-            document.getElementById('modUsername').value = '';
-            document.getElementById('modPassword').value = '';
-            document.getElementById('modActive').checked = true;
-            loadAdmins();
-        } catch (error) {
-            console.error('Error adding admin:', error);
-        }
-    });
-
-        // Event listener untuk form update password
-    document.getElementById('updatePasswordForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        await ubahPassword(user.username);
-    });
-
-    // Load initial data
-    loadPrestasi();
-    loadKarya();
-    if (user.role === "Admin") {
-        loadModerators();
-        loadAdmins();
-    }
-});
-
-async function deletePrestasi(id) {
-    if (!confirm("Apakah Anda yakin ingin menghapus prestasi ini?")) return;
-    try {
-        const { error } = await supabaselokal.from('prestasi').delete().eq('id', id);
-        if (error) throw error;
-        loadPrestasi();
-    } catch (error) {
-        console.error('Error deleting prestasi:', error);
-    }
+.prestasi-item, .moderator-item, .karya-item, .admin-item {
+    background: #f9f9f9;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-async function deleteKarya(id) {
-    if (!confirm("Apakah Anda yakin ingin menghapus karya siswa ini?")) return;
-    try {
-        const { error } = await supabaselokal.from('karya').delete().eq('id', id);
-        if (error) throw error;
-        loadKarya();
-    } catch (error) {
-        console.error('Error deleting karya:', error);
-    }
+.prestasi-item h3, .moderator-item h3, .karya-item h3, .admin-item h3 {
+    margin: 0 0 10px 0;
+    color: #007bff;
 }
 
-async function deleteModerator(username) {
-    if (user.role !== "Admin") {
-        alert("Akses ditolak!");
-        return;
-    }
-    const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
-    if (!account.editable) {
-        alert("Akun ini tidak dapat dihapus!");
-        return;
-    }
-    if (!confirm("Apakah Anda yakin ingin menghapus moderator ini?")) return;
-    try {
-        const { error } = await supabaselokal.from('administrator').delete().eq('username', username);
-        if (error) throw error;
-        loadModerators();
-    } catch (error) {
-        console.error('Error deleting moderator:', error);
-    }
+.prestasi-item p, .moderator-item p, .karya-item p, .admin-item p {
+    margin: 0;
+    color: #555;
 }
 
-async function deleteAdmin(username) {
-    if (user.role !== "Admin" || username === user.username) {
-        alert("Akses ditolak!");
-        return;
-    }
-    const { data: account } = await supabaselokal.from('administrator').select('editable').eq('username', username).single();
-    if (!account.editable) {
-        alert("Akun ini tidak dapat dihapus!");
-        return;
-    }
-    if (!confirm("Apakah Anda yakin ingin menghapus admin ini?")) return;
-    try {
-        const { error } = await supabaselokal.from('administrator').delete().eq('username', username);
-        if (error) throw error;
-        loadAdmins();
-    } catch (error) {
-        console.error('Error deleting admin:', error);
-    }
+.delete-btn, .edit-btn, .toggle-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    margin-left: 5px;
 }
 
-async function toggleActive(username) {
-    if (user.role !== "Admin") {
-        alert("Akses ditolak!");
-        return;
-    }
-    try {
-        const { data: account, error: fetchError } = await supabaselokal.from('administrator').select('*').eq('username', username).single();
-        if (fetchError) throw fetchError;
-        const newStatus = account.status_akun === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
-        const { error } = await supabaselokal.from('administrator').update({ status_akun: newStatus }).eq('username', username);
-        if (error) throw error;
-        loadModerators();
-        loadAdmins();
-    } catch (error) {
-        console.error('Error toggling active:', error);
-    }
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
 }
 
-// Fungsi untuk mengganti password untuk semua user (password milik akun sendiri)
-async function ubahPassword(username) {
-    // Periksa apakah username yang dimasukkan cocok dengan username pengguna saat ini
-    if (user.username !== username) {
-        alert("Akses ditolak!");
-        return;
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.toggle-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.toggle-btn:hover {
+    background-color: #218838;
+}
+
+.toggle-btn.inactive {
+    background-color: #6c757d;
+}
+
+.toggle-btn.inactive:hover {
+    background-color: #5a6268;
+}
+
+main h2 {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    display: inline-block;
+    animation: fadeIn 0.7s ease-in-out 1ms both;
+}
+
+.footerkuadrat {
+    width: 100%;
+    height: 50px;
+    background-color: #f1f1f1;
+    text-align: center;
+    line-height: 50px;
+    color: #8d8d8d;
+    border-top: 1px solid #ddd;
+}
+
+footer {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+    margin-top: auto;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
     }
-
-    const passwordInput = document.getElementById('currentPassword');
-    const newPasswordInput = document.getElementById('newPassword');
-
-    if (!passwordInput.value || !newPasswordInput.value) {
-        alert("Harap isi password saat ini dan password baru!");
-        return;
-    }
-
-    if (newPasswordInput.value.length < 8) {
-        alert("Password baru harus minimal 8 karakter!");
-        return;
-    }
-
-    // Pengecekan CAPTCHA (asumsi menggunakan Google reCAPTCHA v2)
-    // Pastikan elemen dengan id 'recaptcha' ada di HTML, dan site key sudah dikonfigurasi
-    const recaptchaResponse = grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-        alert("Harap lengkapi CAPTCHA!");
-        return;
-    }
-
-    try {
-        // Gunakan query tanpa .maybeSingle() untuk menghindari potensi error, dan handle array secara manual
-        const { data: accounts, error } = await supabaselokal.from('administrator').select('password').eq('username', username);
-        if (error) throw error;
-        
-        // Periksa apakah akun ditemukan
-        if (!accounts || accounts.length === 0) {
-            alert("Akun tidak ditemukan. Silakan login ulang.");
-            grecaptcha.reset();
-            return;
-        }
-        
-        // Ambil akun pertama (seharusnya hanya satu berdasarkan eq('username', username))
-        const account = accounts[0];
-        
-        if (passwordInput.value !== account.password) {
-            alert("Password salah!");
-            grecaptcha.reset();
-            return;
-        }
-
-        // Hapus logika editingModUsername jika tidak diperlukan (untuk keamanan)
-        // Jika diperlukan, tambahkan pengecekan role admin
-        const { error: updateError } = await supabaselokal.from('administrator').update({ 
-            password: newPasswordInput.value 
-        }).eq('username', username);
-        if (updateError) throw updateError;
-            alert("Password berhasil diubah! Silahkan Login ulang.");
-            logout(); // Logout setelah ganti password untuk keamanan
-
-        passwordInput.value = '';
-        newPasswordInput.value = '';
-        grecaptcha.reset(); // Reset CAPTCHA setelah sukses
-
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat mengubah password. Silakan coba lagi.');
-        grecaptcha.reset();
+    .main-content {
+        margin-left: 200px;
     }
 }
