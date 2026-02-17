@@ -44,7 +44,7 @@ function showTab(tabName) {
     document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
     document.getElementById(tabName + '-section').classList.add('active');
     document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    const titles = { prestasi: 'Kelola Prestasi', karya: 'Kelola Karya Siswa', moderator: 'Kelola Moderator', settings: 'Pengaturan Akun' };
+    const titles = { prestasi: 'Kelola Prestasi', karya: 'Kelola Karya Siswa', moderator: 'Kelola Moderator', settings: 'Pengaturan Akun' , siswamng: 'Kelola Siswa'};
     if (document.getElementById('pageTitle')) {
         document.getElementById('pageTitle').innerText = titles[tabName];
     }
@@ -54,6 +54,7 @@ function showTab(tabName) {
         loadModerators();
         loadAdmins();
     }
+    else if (tabName === 'siswamng') loadSiswa();
 }
 
 async function loadPrestasi() {
@@ -491,7 +492,180 @@ async function toggleActive(username) {
     }
 }
 
-// Fungsi untuk mengganti password untuk semua user (password milik akun sendiri)
+let editingSiswaId = null;
+
+// Load siswa (urut berdasarkan ID/absen)
+async function loadSiswa() {
+    try {
+        console.log('Loading siswa...');
+        const { data: siswa, error } = await supabaselokal.from('siswa').select('*').order('id', { ascending: true });
+        if (error) throw error;
+        console.log('Siswa data:', siswa);
+        const list = document.getElementById('siswaList');
+        const noSiswa = document.getElementById('noSiswa');
+        if (list) list.innerHTML = '';
+        if (siswa.length === 0) {
+            if (noSiswa) noSiswa.style.display = 'block';
+        } else {
+            if (noSiswa) noSiswa.style.display = 'none';
+            siswa.forEach((item) => {
+                const li = document.createElement('li');
+                li.className = 'siswa-item';
+                li.innerHTML = `
+                    <div>
+                        <h3>${item.nama_siswa} (Presensi: ${item.id})</h3>
+                        <p>IG: ${item["akun IG"] || 'N/A'} | TikTok: ${item["akun Tiktok"] || 'N/A'}</p>
+                    </div>
+                    <div class="aksi-container">
+                        <button class="aksi-btn" onclick="toggleAksiMenu(event, this)">Aksi</button>
+                        <div class="aksi-menu" style="display: none;">
+                            <button onclick="editSiswa(${item.id})" style="background-color: #007bff;">Edit</button>
+                            <button onclick="deleteSiswa(${item.id})" style="background-color: #dc3545;">Hapus</button>
+                        </div>
+                    </div>
+                `;
+                if (list) list.appendChild(li);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading siswa:', error);
+    }
+}
+
+// Toggle submenu aksi
+function toggleAksiMenu(btn) {
+    const menu = btn.nextElementSibling;
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Edit siswa
+// Edit siswa
+async function editSiswa(id) {
+    try {
+        const { data: item, error } = await supabaselokal.from('siswa').select('*').eq('id', id).single();
+        if (error) throw error;
+        if (document.getElementById('siswaNama')) document.getElementById('siswaNama').value = item.nama_siswa;
+        if (document.getElementById('siswaIg')) document.getElementById('siswaIg').value = item["akun IG"] || '';
+        if (document.getElementById('siswaTiktok')) document.getElementById('siswaTiktok').value = item["akun Tiktok"] || '';
+        if (document.getElementById('siswaDob')) document.getElementById('siswaDob').value = item["tanggal lahir"] || '';
+        if (document.getElementById('siswaPesan')) document.getElementById('siswaPesan').value = item.pesan || '';
+        if (document.getElementById('siswaSubmitBtn')) document.getElementById('siswaSubmitBtn').textContent = 'Update Siswa';
+        if (document.getElementById('siswaFormTitle')) document.getElementById('siswaFormTitle').textContent = 'Edit Siswa';
+        if (document.getElementById('cancelSiswaBtn')) document.getElementById('cancelSiswaBtn').style.display = 'inline-block';
+        if (document.getElementById('siswaFormContainer')) document.getElementById('siswaFormContainer').style.display = 'block';
+        if (document.getElementById('addSiswaBtn')) document.getElementById('addSiswaBtn').textContent = 'Sembunyikan Form';
+        editingSiswaId = id;
+    } catch (error) {
+        console.error('Error fetching siswa:', error);
+        alert('Gagal memuat data siswa untuk edit.');
+    }
+}
+
+// Cancel edit siswa
+function cancelEditSiswa() {
+    if (document.getElementById('siswaNama')) document.getElementById('siswaNama').value = '';
+    if (document.getElementById('siswaIg')) document.getElementById('siswaIg').value = '';
+    if (document.getElementById('siswaTiktok')) document.getElementById('siswaTiktok').value = '';
+    if (document.getElementById('siswaDob')) document.getElementById('siswaDob').value = '';
+    if (document.getElementById('siswaPesan')) document.getElementById('siswaPesan').value = '';
+    if (document.getElementById('siswaSubmitBtn')) document.getElementById('siswaSubmitBtn').textContent = 'Tambah Siswa';
+    if (document.getElementById('siswaFormTitle')) document.getElementById('siswaFormTitle').textContent = 'Tambah Siswa Baru';
+    if (document.getElementById('cancelSiswaBtn')) document.getElementById('cancelSiswaBtn').style.display = 'none';
+    editingSiswaId = null;
+}
+
+// Delete siswa
+async function deleteSiswa(id) {
+    if (!confirm("Apakah Anda yakin ingin menghapus siswa ini?")) return;
+    try {
+        const { error } = await supabaselokal.from('siswa').delete().eq('id', id);
+        if (error) throw error;
+        loadSiswa();
+    } catch (error) {
+        console.error('Error deleting siswa:', error);
+    }
+}
+
+// Event listener untuk form siswa
+document.addEventListener('DOMContentLoaded', function() {
+    // ... kode sebelumnya ...
+
+    if (document.getElementById('addSiswaForm')) {
+        document.getElementById('addSiswaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nama = document.getElementById('siswaNama').value;
+            const ig = document.getElementById('siswaIg').value;
+            const tiktok = document.getElementById('siswaTiktok').value;
+            const dob = document.getElementById('siswaDob').value;
+            const pesan = document.getElementById('siswaPesan').value;
+            try {
+                if (editingSiswaId) {
+                    const { error } = await supabaselokal.from('siswa').update({
+                        nama_siswa: nama,
+                        "akun IG": ig,
+                        "akun Tiktok": tiktok,
+                        "tanggal lahir": dob,
+                        pesan: pesan
+                    }).eq('id', editingSiswaId);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaselokal.from('siswa').insert([{
+                        nama_siswa: nama,
+                        "akun IG": ig,
+                        "akun Tiktok": tiktok,
+                        "tanggal lahir": dob,
+                        pesan: pesan
+                    }]);
+                    if (error) throw error;
+                }
+                cancelEditSiswa();
+                loadSiswa();
+            } catch (error) {
+                console.error('Error saving siswa:', error);
+            }
+        });
+    }
+
+    // Load siswa saat tab aktif
+    // Tambahkan di showTab: if (tabName === 'siswamng') loadSiswa();
+});
+// Toggle form tambah siswa
+document.addEventListener('DOMContentLoaded', function() {
+    // ... kode sebelumnya ...
+
+    if (document.getElementById('addSiswaBtn')) {
+        document.getElementById('addSiswaBtn').addEventListener('click', function() {
+            const container = document.getElementById('siswaFormContainer');
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+            this.textContent = container.style.display === 'block' ? 'Sembunyikan Form' : 'Tambah Akun';
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('aksi-btn')) {
+            const menu = e.target.nextElementSibling;
+            document.querySelectorAll('.aksi-menu').forEach(m => {
+                if (m !== menu) m.style.display = 'none';
+            });
+            // Toggle menu ini
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        } else if (!e.target.closest('.aksi-container')) {
+            document.querySelectorAll('.aksi-menu').forEach(m => m.style.display = 'none');
+        }
+    });
+
+});
+
+// Cancel add siswa (sembunyikan form)
+function cancelAddSiswa() {
+    const container = document.getElementById('siswaFormContainer');
+    container.style.display = 'none';
+    document.getElementById('addSiswaBtn').textContent = 'Tambah Akun';
+    cancelEditSiswa(); // Reset form
+}
+
 async function ubahPassword(username) {
     // Periksa apakah username yang dimasukkan cocok dengan username pengguna saat ini
     if (user.username !== username) {
