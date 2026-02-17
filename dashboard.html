@@ -21,6 +21,7 @@
                 <li><a href="#" class="sidebar-link active" data-tab="prestasi">🏆 Prestasi</a></li>
                 <li><a href="#" class="sidebar-link" data-tab="karya">🎨 Karya Siswa</a></li>
                 <li id="moderatorMenu" style="display: none;"><a href="#" class="sidebar-link" data-tab="moderator">👥 Moderator</a></li>
+                <li><a href="#" class="sidebar-link" data-tab="siswamng">👥 Siswa</a></li>
             </ul>
         </nav>
         <div class="sidebar-divider"></div>
@@ -97,6 +98,25 @@
                     <div class="g-recaptcha" data-sitekey="6Leu3GssAAAAAJXyOLGFr85GEnMEYFvNtVOHJkeG" id="recaptcha"></div>
                     <button type="submit" style="background-color: #800000;">Update Password</button>
                 </form>
+            </div>
+            <div id="siswamng-section" class="section">
+                <h3>Kelola Siswa</h3>
+                <button id="addSiswaBtn" style="background-color: rgb(1, 152, 1);">Tambah Akun</button>
+                <div id="siswaFormContainer" style="display: none;">
+                    <h3 id="siswaFormTitle">Tambah Siswa Baru</h3>
+                    <form id="addSiswaForm">
+                        <input type="text" id="siswaNama" placeholder="Nama Siswa" required>
+                        <input type="text" id="siswaIg" placeholder="Akun Instagram (tanpa @)">
+                        <input type="text" id="siswaTiktok" placeholder="Akun TikTok (tanpa @)">
+                        <input type="date" id="siswaDob">
+                        <textarea id="siswaPesan" placeholder="Pesan (Opsional)" rows="3"></textarea>
+                        <button type="submit" id="siswaSubmitBtn" style="background-color: rgb(1, 152, 1);">Apply</button>
+                        <button type="button" id="cancelSiswaBtn" style="background-color: rgb(179, 0, 0);" onclick="cancelAddSiswa()">Batal</button>
+                    </form>
+                </div>
+                <h3>Daftar Siswa</h3>
+                <ul class="siswa-list" id="siswaList"></ul>
+                <p id="noSiswa">Belum ada siswa yang terdaftar.</p>
             </div>
         </div>
     </main>
