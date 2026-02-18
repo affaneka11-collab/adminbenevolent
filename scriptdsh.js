@@ -496,6 +496,10 @@ let editingSiswaId = null;
 
 // Load siswa (urut berdasarkan ID/absen)
 async function loadSiswa() {
+    if (user.role !== "Admin") {
+        const toboladdsiswa = document.getElementById('addSiswaBtn');
+        toboladdsiswa.style.display = 'none';
+    }
     try {
         console.log('Loading siswa...');
         const { data: siswa, error } = await supabaselokal.from('siswa').select('*').order('id', { ascending: true });
@@ -519,8 +523,9 @@ async function loadSiswa() {
                     <div class="aksi-container">
                         <button class="aksi-btn" onclick="toggleAksiMenu(event, this)">Aksi</button>
                         <div class="aksi-menu" style="display: none;">
-                            <button onclick="editSiswa(${item.id})" style="background-color: #007bff;">Edit</button>
-                            <button onclick="deleteSiswa(${item.id})" style="background-color: #dc3545;">Hapus</button>
+                            <button onclick="editSiswa(${item.id})" style="background-color: #007bff;" class="btn2">Edit</button>
+                            <button onclick="deleteSiswa(${item.id})" style="background-color: #dc3545;" class="btn2">Hapus</button>
+                            <button onclick="resetpasswordSiswa(${item.id})" style="background-color: #28a745;" class="btn2">Reset Password</button>
                         </div>
                     </div>
                 `;
@@ -538,8 +543,18 @@ function toggleAksiMenu(btn) {
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// Edit siswa
-// Edit siswa
+resetpasswordSiswa = async function(id) {
+    if (!confirm("Apakah Anda yakin ingin mereset password siswa ini? Password akan direset menjadi '12345678' (default) ")) return;
+    try {
+        const { error } = await supabaselokal.from('siswa').update({ password: '12345678' }).eq('id', id);
+        if (error) throw error;
+        alert('Password siswa berhasil direset menjadi "12345678".');
+    }
+    catch (error) {
+        console.error('Error resetting password siswa:', error);
+        alert('Gagal mereset password siswa.');
+    }
+}
 async function editSiswa(id) {
     try {
         const { data: item, error } = await supabaselokal.from('siswa').select('*').eq('id', id).single();
