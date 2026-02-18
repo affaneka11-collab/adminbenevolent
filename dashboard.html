@@ -50,8 +50,8 @@
                     <input type="text" id="title" placeholder="Judul Prestasi" required>
                     <textarea id="description" placeholder="Deskripsi Prestasi" rows="4" required></textarea>
                     <input type="text" id="ImageUrl" placeholder="URL Gambar Karya (Opsional)">
-                    <button type="submit" id="prestasiSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Prestasi</button>
-                    <button type="button" id="cancelPrestasiBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('prestasi')">Batal</button>
+                    <button class="btn" type="submit" id="prestasiSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Prestasi</button>
+                    <button class="btn" type="button" id="cancelPrestasiBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('prestasi')">Batal</button>
                 </form>
                 <h3>Daftar Prestasi</h3>
                 <ul class="prestasi-list" id="prestasiList"></ul>
@@ -63,8 +63,8 @@
                     <input type="text" id="karyaTitle" placeholder="Judul Karya" required>
                     <textarea id="karyaDescription" placeholder="Deskripsi Karya" rows="4" required></textarea>
                     <input type="text" id="karyaImageUrl" placeholder="URL Gambar Karya (Opsional)">
-                    <button type="submit" id="karyaSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Karya</button>
-                    <button type="button" id="cancelKaryaBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('karya')">Batal</button>
+                    <button class="btn" type="submit" id="karyaSubmitBtn" style="background-color: rgb(1, 152, 1);">Tambah Karya</button>
+                    <button class="btn" type="button" id="cancelKaryaBtn" style="display: none; background-color: rgb(179, 0, 0);" onclick="cancelEdit('karya')">Batal</button>
                 </form>
                 <h3>Daftar Karya Siswa</h3>
                 <ul class="karya-list" id="karyaList"></ul>
@@ -80,9 +80,9 @@
                         <label for="modActive" class="checkbox-label"></label>
                         <span>Active</span>
                     </div>
-                    <button type="submit" id="modSubmitBtn" style="background-color: rgb(1, 1, 152);">Tambahkan sebagai Moderator</button>
-                    <button type="button" id="addAdminBtn" style="background-color: rgb(179, 98, 0);">Tambahkan sebagai Admin</button>
-                    <button type="button" id="cancelModBtn" style="display: none; background-color: rgb(187, 0, 0);" onclick="cancelEdit('moderator')">Batal</button>
+                    <button class="btn" type="submit" id="modSubmitBtn" style="background-color: rgb(1, 1, 152);">Tambahkan sebagai Moderator</button>
+                    <button class="btn" type="button" id="addAdminBtn" style="background-color: rgb(179, 98, 0);">Tambahkan sebagai Admin</button>
+                    <button class="btn" type="button" id="cancelModBtn" style="display: none; background-color: rgb(187, 0, 0);" onclick="cancelEdit('moderator')">Batal</button>
                 </form>
                 <h4>Daftar Moderator</h4>
                 <ul class="moderator-list" id="moderatorList"></ul>
@@ -96,12 +96,12 @@
                     <input type="password" id="newPassword" placeholder="Password Baru" required>
                     <!-- Tambahkan elemen reCAPTCHA di sini -->
                     <div class="g-recaptcha" data-sitekey="6Leu3GssAAAAAJXyOLGFr85GEnMEYFvNtVOHJkeG" id="recaptcha"></div>
-                    <button type="submit" style="background-color: #800000;">Update Password</button>
+                    <button class="btn" type="submit" style="background-color: #800000;">Update Password</button>
                 </form>
             </div>
             <div id="siswamng-section" class="section">
                 <h3>Kelola Siswa</h3>
-                <button id="addSiswaBtn" style="background-color: rgb(1, 152, 1);">Tambah Akun</button>
+                <button class="btn" id="addSiswaBtn" style="background-color: rgb(1, 152, 1);">Tambah Akun</button>
                 <div id="siswaFormContainer" style="display: none;">
                     <h3 id="siswaFormTitle">Tambah Siswa Baru</h3>
                     <form id="addSiswaForm">
@@ -110,8 +110,8 @@
                         <input type="text" id="siswaTiktok" placeholder="Akun TikTok (tanpa @)">
                         <input type="date" id="siswaDob">
                         <textarea id="siswaPesan" placeholder="Pesan (Opsional)" rows="3"></textarea>
-                        <button type="submit" id="siswaSubmitBtn" style="background-color: rgb(1, 152, 1);">Apply</button>
-                        <button type="button" id="cancelSiswaBtn" style="background-color: rgb(179, 0, 0);" onclick="cancelAddSiswa()">Batal</button>
+                        <button type="submit" class="btn" id="siswaSubmitBtn" style="background-color: rgb(1, 152, 1);">Apply</button>
+                        <button type="button" class="btn" id="cancelSiswaBtn" style="background-color: rgb(179, 0, 0);" onclick="cancelAddSiswa()">Batal</button>
                     </form>
                 </div>
                 <h3>Daftar Siswa</h3>
