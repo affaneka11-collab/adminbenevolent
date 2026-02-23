@@ -352,6 +352,23 @@ initializeSession().then(isValid => {
   }
 });
 
+// Tampilkan info session di UI
+function updateSessionStatus() {
+  const lastActivity = localStorage.getItem('adminLastActivity');
+  if (lastActivity) {
+    const diff = Date.now() - parseInt(lastActivity);
+    const minutesLeft = Math.round((SESSION_TIMEOUT - diff) / 60000);
+    
+    const statusEl = document.getElementById('sessionStatus');
+    if (statusEl) {
+      statusEl.textContent = `Session aktif: ${Math.max(0, minutesLeft)} menit tersisa`;
+      statusEl.style.color = minutesLeft < 5 ? 'red' : 'green';
+    }
+  }
+}
+
+// Update status setiap menit
+setInterval(updateSessionStatus, 60000);
 // ==================== FUNGSI LAINNYA (SAMA SEPERTI SEMULA) ====================
 
 let editingPrestasiId = null;
@@ -1148,3 +1165,4 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAdmins();
   }
 });
+
